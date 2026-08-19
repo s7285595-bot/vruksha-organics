@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import Image from "next/image";
+// import Image from "next/image";
 
 type CheckoutItem = {
   id: string;
