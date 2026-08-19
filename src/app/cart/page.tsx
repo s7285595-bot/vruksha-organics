@@ -154,14 +154,7 @@ export default function CartPage() {
         <div className="cart-header">
 
           <div>
-            <span className="cart-kicker">
-              VRUKSHA ORGANICS
-            </span>
-
-            <h1>
-              Your Cart
-            </h1>
-
+           
             <p>
               {cartItems.reduce(
                 (total, item) =>

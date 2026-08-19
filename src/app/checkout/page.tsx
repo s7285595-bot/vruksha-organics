@@ -258,22 +258,20 @@ const saveAddress = () => {
   setAddress(addressForm);
   setShowAddressForm(false);
 };
-
-  const handlePayment = () => {
-    /*
-      Temporary frontend behavior.
-
-      Later this button will call your
-      Spring Boot payment API and create
-      the order only after verified payment.
-    */
+const handlePayment = () => {
+  if (paymentMethod === "COD") {
     alert(
-      `Payment flow starting for ₹${total.toLocaleString(
-        "en-IN"
-      )} using ${paymentMethod}.`
+      "Order placed with Cash on Delivery."
     );
-  };
+    return;
+  }
 
+  alert(
+    `Starting ${paymentMethod} payment for ₹${total.toLocaleString(
+      "en-IN"
+    )}.`
+  );
+};
   if (!loaded) {
     return (
       <main className="checkout-page">
