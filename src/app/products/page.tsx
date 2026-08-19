@@ -1,6 +1,3 @@
-"use client";
-import SplashScreen from "@/components/SplashScreen";
-// import Navbar from "@/components/Navbar";
 import ProductCard from "@/components/ProductCard";
 import { Product } from "@/types/product";
 
@@ -87,52 +84,46 @@ const products: Product[] = [
   },
 ];
 
-export default function Home() {
+export default function ProductsPage() {
   return (
-    <>
-      <SplashScreen />
+    <main className="products-page">
+      <section className="products-section">
 
-      {/* <Navbar /> */}
-
-      <main className="store-page">
-
-        {/* PRODUCT SECTION */}
-
-        <section className="products-section">
-
-          <div className="products-header">
-            
-
-            <select defaultValue="featured">
-              <option value="featured">
-                Featured
-              </option>
-
-              <option value="low">
-                Price: Low to High
-              </option>
-
-              <option value="high">
-                Price: High to Low
-              </option>
-
-              <option value="rating">
-                Customer Rating
-              </option>
-            </select>
+        <div className="products-header">
+          <div>
+            <span>VRUKSHA ORGANICS</span>
+            <h1>Organic Products</h1>
           </div>
 
-         <div className="product-grid">
-  {products.map((product) => (
-    <ProductCard
-      key={product.id}
-      product={product}
-    />
-  ))}
-</div>
-        </section>
+          <select defaultValue="featured">
+            <option value="featured">
+              Featured
+            </option>
 
-      </main>
-    </>
+            <option value="low">
+              Price: Low to High
+            </option>
+
+            <option value="high">
+              Price: High to Low
+            </option>
+
+            <option value="rating">
+              Customer Rating
+            </option>
+          </select>
+        </div>
+
+        <div className="product-grid">
+          {products.map((product) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+            />
+          ))}
+        </div>
+
+      </section>
+    </main>
   );
 }
