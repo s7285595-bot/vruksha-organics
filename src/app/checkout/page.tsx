@@ -44,6 +44,17 @@ export default function CheckoutPage() {
 
   const [address, setAddress] =
     useState<Address>(demoAddress);
+    const [savedAddresses, setSavedAddresses] =
+  useState<Address[]>([demoAddress]);
+
+const [showAddressForm, setShowAddressForm] =
+  useState(false);
+
+const [editingAddressId, setEditingAddressId] =
+  useState<string | null>(null);
+
+const [addressForm, setAddressForm] =
+  useState<Address>(demoAddress);
 
   const [paymentMethod, setPaymentMethod] =
     useState<PaymentMethod>("UPI");
@@ -140,60 +151,113 @@ export default function CheckoutPage() {
     }
   };
 
-  const handleChangeAddress = () => {
-    const name = window.prompt(
-      "Enter your name",
-      address.name
+  // const handleChangeAddress = () => {
+  //   const name = window.prompt(
+  //     "Enter your name",
+  //     address.name
+  //   );
+
+  //   const phone = window.prompt(
+  //     "Enter phone number",
+  //     address.phone
+  //   );
+
+  //   const addressLine = window.prompt(
+  //     "Enter address",
+  //     address.addressLine
+  //   );
+
+  //   const city = window.prompt(
+  //     "Enter city",
+  //     address.city
+  //   );
+
+  //   const state = window.prompt(
+  //     "Enter state",
+  //     address.state
+  //   );
+
+  //   const pincode = window.prompt(
+  //     "Enter PIN code",
+  //     address.pincode
+  //   );
+
+  //   if (
+  //     name &&
+  //     phone &&
+  //     addressLine &&
+  //     city &&
+  //     state &&
+  //     pincode
+  //   ) {
+  //     setAddress({
+  //       ...address,
+  //       name,
+  //       phone,
+  //       addressLine,
+  //       city,
+  //       state,
+  //       pincode,
+  //     });
+  //   }
+  // };
+
+  // const handleAddAddress = () => {
+  //   handleChangeAddress();
+  // };
+
+ const openAddAddress = () => {
+  setEditingAddressId(null);
+
+  setAddressForm({
+    id: Date.now().toString(),
+    name: "",
+    phone: "",
+    addressLine: "",
+    city: "",
+    state: "",
+    pincode: "",
+  });
+
+  setShowAddressForm(true);
+};
+
+const openEditAddress = (item: Address) => {
+  setEditingAddressId(item.id);
+  setAddressForm(item);
+  setShowAddressForm(true);
+};
+
+const saveAddress = () => {
+  if (
+    !addressForm.name.trim() ||
+    !addressForm.phone.trim() ||
+    !addressForm.addressLine.trim() ||
+    !addressForm.city.trim() ||
+    !addressForm.state.trim() ||
+    !addressForm.pincode.trim()
+  ) {
+    return;
+  }
+
+  if (editingAddressId) {
+    setSavedAddresses((current) =>
+      current.map((item) =>
+        item.id === editingAddressId
+          ? addressForm
+          : item
+      )
     );
+  } else {
+    setSavedAddresses((current) => [
+      ...current,
+      addressForm,
+    ]);
+  }
 
-    const phone = window.prompt(
-      "Enter phone number",
-      address.phone
-    );
-
-    const addressLine = window.prompt(
-      "Enter address",
-      address.addressLine
-    );
-
-    const city = window.prompt(
-      "Enter city",
-      address.city
-    );
-
-    const state = window.prompt(
-      "Enter state",
-      address.state
-    );
-
-    const pincode = window.prompt(
-      "Enter PIN code",
-      address.pincode
-    );
-
-    if (
-      name &&
-      phone &&
-      addressLine &&
-      city &&
-      state &&
-      pincode
-    ) {
-      setAddress({
-        ...address,
-        name,
-        phone,
-        addressLine,
-        city,
-        state,
-        pincode,
-      });
-    }
-  };
-
-  const handleAddAddress = () => {
-    handleChangeAddress();
-  };
+  setAddress(addressForm);
+  setShowAddressForm(false);
+};
 
   const handlePayment = () => {
     /*
@@ -260,60 +324,176 @@ export default function CheckoutPage() {
           <div className="checkout-main">
 
             {/* ADDRESS */}
+{/* ADDRESS */}
 
-            <section className="checkout-card">
+<section className="checkout-card">
 
-              <div className="checkout-card-header">
-                <div>
-                  <span>1</span>
-                  <h2>
-                    Delivery Address
-                  </h2>
-                </div>
+  <div className="checkout-card-header">
 
-                <button
-                  type="button"
-                  onClick={
-                    handleChangeAddress
-                  }
-                >
-                  CHANGE
-                </button>
-              </div>
+    <div>
+      <span>1</span>
 
-              <div className="checkout-address">
+      <h2>
+        Delivery Address
+      </h2>
+    </div>
 
-                <strong>
-                  {address.name}
-                </strong>
+    <button
+      type="button"
+      onClick={() =>
+        openEditAddress(address)
+      }
+    >
+      CHANGE
+    </button>
 
-                <p>
-                  {address.addressLine}
-                </p>
+  </div>
 
-                <p>
-                  {address.city},{" "}
-                  {address.state}{" "}
-                  {address.pincode}
-                </p>
+  <div className="checkout-address">
 
-                <p>
-                  Phone: {address.phone}
-                </p>
+    <strong>
+      {address.name}
+    </strong>
 
-              </div>
+    <p>
+      {address.addressLine}
+    </p>
 
-              <button
-                type="button"
-                className="add-address-button"
-                onClick={
-                  handleAddAddress
-                }
-              >
-                + ADD NEW ADDRESS
-              </button>
+    <p>
+      {address.city},{" "}
+      {address.state}{" "}
+      {address.pincode}
+    </p>
 
-            </section>
+    <p>
+      Phone: {address.phone}
+    </p>
+
+  </div>
+
+  <button
+    type="button"
+    className="add-address-button"
+    onClick={openAddAddress}
+  >
+    + ADD NEW ADDRESS
+  </button>
+
+
+  {/* ADDRESS FORM */}
+
+  {showAddressForm && (
+    <div className="address-form">
+
+      <h3>
+        {editingAddressId
+          ? "Edit Address"
+          : "Add New Address"}
+      </h3>
+
+      <input
+        type="text"
+        placeholder="Full name"
+        value={addressForm.name}
+        onChange={(event) =>
+          setAddressForm({
+            ...addressForm,
+            name: event.target.value,
+          })
+        }
+      />
+
+      <input
+        type="tel"
+        placeholder="Phone number"
+        value={addressForm.phone}
+        onChange={(event) =>
+          setAddressForm({
+            ...addressForm,
+            phone: event.target.value,
+          })
+        }
+      />
+
+      <textarea
+        placeholder="Full address"
+        value={addressForm.addressLine}
+        onChange={(event) =>
+          setAddressForm({
+            ...addressForm,
+            addressLine:
+              event.target.value,
+          })
+        }
+      />
+
+      <div className="address-form-row">
+
+        <input
+          type="text"
+          placeholder="City"
+          value={addressForm.city}
+          onChange={(event) =>
+            setAddressForm({
+              ...addressForm,
+              city: event.target.value,
+            })
+          }
+        />
+
+        <input
+          type="text"
+          placeholder="State"
+          value={addressForm.state}
+          onChange={(event) =>
+            setAddressForm({
+              ...addressForm,
+              state: event.target.value,
+            })
+          }
+        />
+
+      </div>
+
+      <input
+        type="text"
+        placeholder="PIN code"
+        value={addressForm.pincode}
+        onChange={(event) =>
+          setAddressForm({
+            ...addressForm,
+            pincode:
+              event.target.value,
+          })
+        }
+      />
+
+      <div className="address-form-actions">
+
+        <button
+          type="button"
+          className="address-cancel-button"
+          onClick={() =>
+            setShowAddressForm(false)
+          }
+        >
+          CANCEL
+        </button>
+
+        <button
+          type="button"
+          className="address-save-button"
+          onClick={saveAddress}
+        >
+          SAVE ADDRESS
+        </button>
+
+      </div>
+
+    </div>
+  )}
+
+</section>
 
 
             {/* DELIVERY DATE */}
@@ -534,7 +714,7 @@ export default function CheckoutPage() {
 
                     <div className="checkout-product-image">
                       {item.image ? (
-                        <img
+                        <img  
                           src={item.image}
                           alt={item.name}
                         />
