@@ -91,6 +91,15 @@ export default function ProductPage({
 };
   return (
     <main className="product-details-page">
+       <div className="product-back-wrapper">
+    <button
+      type="button"
+      className="product-back-button"
+      onClick={() => router.back()}
+    >
+      ← Back
+    </button>
+  </div>
 
       <div className="product-details-container">
 

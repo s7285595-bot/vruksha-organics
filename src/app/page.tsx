@@ -1,5 +1,4 @@
 "use client";
-import SplashScreen from "@/components/SplashScreen";
 // import Navbar from "@/components/Navbar";
 import ProductCard from "@/components/ProductCard";
 import { Product } from "@/types/product";
@@ -90,7 +89,6 @@ const products: Product[] = [
 export default function Home() {
   return (
     <>
-      <SplashScreen />
 
       {/* <Navbar /> */}
 

@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 // import Image from "next/image";
-
+import { useCart } from "@/store/CartProvider";
 type CheckoutItem = {
   id: string;
   name: string;
@@ -41,7 +42,10 @@ const demoAddress: Address = {
 export default function CheckoutPage() {
   const [items, setItems] = useState<CheckoutItem[]>([]);
   const [loaded, setLoaded] = useState(false);
-
+const {
+  buyNowItem,
+  clearBuyNowItem,
+} = useCart();
   const [address, setAddress] =
     useState<Address>(demoAddress);
     const [savedAddresses, setSavedAddresses] =
@@ -64,52 +68,61 @@ const [addressForm, setAddressForm] =
 
   const [voucherApplied, setVoucherApplied] =
     useState(false);
-
-  useEffect(() => {
-    try {
-      const stored =
-        sessionStorage.getItem(
-          "vruksha-checkout-items"
-        );
-
-      if (stored) {
-        const parsed = JSON.parse(stored);
-
-        if (Array.isArray(parsed)) {
-          setItems(parsed);
-        }
-      }
-    } catch (error) {
-      console.error(
-        "Could not load checkout items:",
-        error
-      );
-    } finally {
+useEffect(() => {
+  try {
+    // BUY NOW takes priority
+    if (buyNowItem) {
+      setItems([buyNowItem]);
       setLoaded(true);
+      return;
     }
-  }, []);
 
-  const subtotal = useMemo(() => {
-    return items.reduce(
-      (total, item) =>
-        total + item.price * item.quantity,
-      0
+    // NORMAL CART CHECKOUT
+    const stored =
+      sessionStorage.getItem(
+        "vruksha-checkout-items"
+      );
+
+    if (stored) {
+      const parsed = JSON.parse(stored);
+
+      if (Array.isArray(parsed)) {
+        setItems(parsed);
+      }
+    }
+  } catch (error) {
+    console.error(
+      "Could not load checkout items:",
+      error
     );
-  }, [items]);
+  } finally {
+    setLoaded(true);
+  }
+}, [buyNowItem]);
 
   // Temporary demo values.
   // These will later come from Spring Boot.
-  const savings = useMemo(() => {
-    return items.reduce(
-      (total, item) =>
-        total + Math.round(item.price * 0.1) * item.quantity,
-      0
-    );
-  }, [items]);
-
-  const tax = Math.round(
-    (subtotal - savings) * 0.05
+  const subtotal = useMemo(() => {
+  return items.reduce(
+    (total, item) =>
+      total + item.price * item.quantity,
+    0
   );
+}, [items]);
+
+const savings = useMemo(() => {
+  return items.reduce(
+    (total, item) =>
+      total +
+      Math.round(item.price * 0.1) *
+        item.quantity,
+    0
+  );
+}, [items]);
+
+const tax = Math.round(
+  (subtotal - savings) * 0.05
+);
 
   const deliveryCharge =
     subtotal >= 499 ? 0 : 40;
@@ -123,7 +136,7 @@ const [addressForm, setAddressForm] =
     voucherDiscount +
     tax +
     deliveryCharge;
-
+const router = useRouter();
   const estimatedDate = new Date();
 
   estimatedDate.setDate(
@@ -151,61 +164,7 @@ const [addressForm, setAddressForm] =
     }
   };
 
-  // const handleChangeAddress = () => {
-  //   const name = window.prompt(
-  //     "Enter your name",
-  //     address.name
-  //   );
-
-  //   const phone = window.prompt(
-  //     "Enter phone number",
-  //     address.phone
-  //   );
-
-  //   const addressLine = window.prompt(
-  //     "Enter address",
-  //     address.addressLine
-  //   );
-
-  //   const city = window.prompt(
-  //     "Enter city",
-  //     address.city
-  //   );
-
-  //   const state = window.prompt(
-  //     "Enter state",
-  //     address.state
-  //   );
-
-  //   const pincode = window.prompt(
-  //     "Enter PIN code",
-  //     address.pincode
-  //   );
-
-  //   if (
-  //     name &&
-  //     phone &&
-  //     addressLine &&
-  //     city &&
-  //     state &&
-  //     pincode
-  //   ) {
-  //     setAddress({
-  //       ...address,
-  //       name,
-  //       phone,
-  //       addressLine,
-  //       city,
-  //       state,
-  //       pincode,
-  //     });
-  //   }
-  // };
-
-  // const handleAddAddress = () => {
-  //   handleChangeAddress();
-  // };
-
+  
  const openAddAddress = () => {
   setEditingAddressId(null);
 
@@ -286,7 +245,12 @@ const handlePayment = () => {
   if (items.length === 0) {
     return (
       <main className="checkout-page">
+
+
+        
+       
         <div className="checkout-container">
+           {/* BACK BUTTON */}
           <h1>Checkout</h1>
 
           <p>
@@ -303,6 +267,16 @@ const handlePayment = () => {
 
   return (
     <main className="checkout-page">
+
+        <div className="checkout-back-wrapper">
+        <button
+          type="button"
+          className="checkout-back-button"
+          onClick={() => router.back()}
+        >
+          ← Back
+        </button>
+      </div>
       <div className="checkout-container">
 
         <div className="checkout-title">

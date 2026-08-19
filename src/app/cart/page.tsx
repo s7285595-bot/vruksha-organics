@@ -9,11 +9,12 @@ import Image from "next/image";
 export default function CartPage() {
   const router = useRouter();
 
-  const {
-    cartItems,
-    removeFromCart,
-    updateQuantity,
-  } = useCart();
+const {
+  cartItems,
+  removeFromCart,
+  updateQuantity,
+  clearBuyNowItem,
+} = useCart();
 
   // IDs of items currently selected for checkout
  const [selectedIds, setSelectedIds] =
@@ -97,18 +98,22 @@ export default function CartPage() {
   // PROCEED TO BUY
   // -----------------------------------------
 
-  const handleProceedToBuy = () => {
-    if (selectedItems.length === 0) {
-      return;
-    }
+ const handleProceedToBuy = () => {
+  if (selectedItems.length === 0) {
+    return;
+  }
 
-    sessionStorage.setItem(
-      "vruksha-checkout-items",
-      JSON.stringify(selectedItems)
-    );
+  // This checkout is coming from CART,
+  // so don't use an old Buy Now item.
+  clearBuyNowItem();
 
-    router.push("/checkout");
-  };
+  sessionStorage.setItem(
+    "vruksha-checkout-items",
+    JSON.stringify(selectedItems)
+  );
+
+  router.push("/checkout");
+};
 
   // -----------------------------------------
   // EMPTY CART
